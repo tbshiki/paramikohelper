@@ -46,7 +46,7 @@ def ssh_connect(hostname: str, portnumber: int, username: str, key_path: str, pa
 
     return client
 
-def upload_files(list_upload_files, dct_sftp, tmp_dir :str = str(Path(__file__))):
+def upload_files(list_upload_files, dct_sftp, tmp_dir :str = str(Path(__file__).parent)):
     UPLOAD_HOSTNAME: str = dct_sftp["upload_hostname"]
     UPLOAD_PORT: int = int(dct_sftp["upload_port"])
     UPLOAD_FTPUSERNAME: str = dct_sftp["upload_ftpusername"]
