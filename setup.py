@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 NAME = "paramikohelper"
-VERSION = "0.1"
+VERSION = "0.1.1"
 
 AUTHOR = "tbshiki"
 AUTHOR_EMAIL = "info@tbshiki.com"
