@@ -46,7 +46,7 @@ def ssh_connect(hostname: str, portnumber: int, username: str, key_path: str, pa
 
     return client
 
-def upload_files(list_upload_files, dct_sftp):
+def upload_files(list_upload_files, dct_sftp, tmp_dir :str = str(Path(__file__))):
     UPLOAD_HOSTNAME: str = dct_sftp["upload_hostname"]
     UPLOAD_PORT: int = int(dct_sftp["upload_port"])
     UPLOAD_FTPUSERNAME: str = dct_sftp["upload_ftpusername"]
@@ -55,21 +55,25 @@ def upload_files(list_upload_files, dct_sftp):
     UPLOAD_REMOTEDIR: str = dct_sftp["upload_remotedir"]
 
     # パスフレーズをもとにパスキーを生成
-    key_path = os.path.join(str(Path(__file__)), "id_rsa")
+    key_path = os.path.join(tmp_dir, "id_rsa")
     with open(key_path, "w") as f:
         f.write(UPLOAD_PKEYSTR)
 
-    print(f"アップロードを開始 : {localpath} -> {remotepath}")
+    print(f"アップロード開始")
+    remotepath_list = []
     with ssh_connect(UPLOAD_HOSTNAME, UPLOAD_PORT, UPLOAD_FTPUSERNAME, key_path, UPLOAD_PASSPHRASE) as client:
         with client.open_sftp() as sftp:
             for file in list_upload_files:
                 parsed_file_name = urllib.parse.urlparse(str(file))  # ファイル名を取得するためにパース
                 file_name = os.path.basename(parsed_file_name.path)  # ファイル名のみを取得
                 remotepath = UPLOAD_REMOTEDIR + file_name  # アップロード先のパス(リモート)
+                remotepath_list.append(remotepath) # アップロード先のパスをリストに追加
                 localpath = str(file)  # アップロードしたいファイルのパス(ローカル)
                 sftp.put(localpath=localpath, remotepath=remotepath)  # アップロード
 
-    print(f"アップロード完了 : {localpath} -> {remotepath}")
+    print(f"アップロード完了")
 
     # パスキーを削除する
     os.remove(key_path)
+
+    return remotepath_list
