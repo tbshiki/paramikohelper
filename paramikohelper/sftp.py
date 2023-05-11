@@ -46,13 +46,13 @@ def ssh_connect(hostname: str, portnumber: int, username: str, key_path: str, pa
 
     return client
 
-def upload_files(list_files, dct_info):
-    UPLOAD_HOSTNAME: str = dct_info["upload_hostname"]
-    UPLOAD_PORT: int = int(dct_info["upload_port"])
-    UPLOAD_FTPUSERNAME: str = dct_info["upload_ftpusername"]
-    UPLOAD_PKEYSTR: str = dct_info["upload_pkeystr"]
-    UPLOAD_PASSPHRASE: str = dct_info["upload_passphrase"]
-    UPLOAD_REMOTEDIR: str = dct_info["upload_remotedir"]
+def upload_files(list_upload_files, dct_sftp):
+    UPLOAD_HOSTNAME: str = dct_sftp["upload_hostname"]
+    UPLOAD_PORT: int = int(dct_sftp["upload_port"])
+    UPLOAD_FTPUSERNAME: str = dct_sftp["upload_ftpusername"]
+    UPLOAD_PKEYSTR: str = dct_sftp["upload_pkeystr"]
+    UPLOAD_PASSPHRASE: str = dct_sftp["upload_passphrase"]
+    UPLOAD_REMOTEDIR: str = dct_sftp["upload_remotedir"]
 
     # パスフレーズをもとにパスキーを生成
     key_path = os.path.join(str(Path(__file__)), "id_rsa")
@@ -62,7 +62,7 @@ def upload_files(list_files, dct_info):
     print(f"アップロードを開始 : {localpath} -> {remotepath}")
     with ssh_connect(UPLOAD_HOSTNAME, UPLOAD_PORT, UPLOAD_FTPUSERNAME, key_path, UPLOAD_PASSPHRASE) as client:
         with client.open_sftp() as sftp:
-            for file in list_files:
+            for file in list_upload_files:
                 parsed_file_name = urllib.parse.urlparse(str(file))  # ファイル名を取得するためにパース
                 file_name = os.path.basename(parsed_file_name.path)  # ファイル名のみを取得
                 remotepath = UPLOAD_REMOTEDIR + file_name  # アップロード先のパス(リモート)
